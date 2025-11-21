@@ -1,0 +1,12 @@
+{
+    "name": "C++ Raw",
+    "dockerFile": "../cpp/Dockerfile",
+    "context": "..",
+    "remoteUser": "root",
+
+    "mounts": [
+        "source=${localWorkspaceFolder},target=/workspace,type=bind"
+    ],
+
+    "extensions": []
+}
