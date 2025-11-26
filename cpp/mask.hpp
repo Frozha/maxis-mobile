@@ -1,7 +1,7 @@
 #pragma once
 #include<cstdint>
 #include<array>
-
+#include<cstddef>
 constexpr int VIEW_LEN = 13;
 enum class CellMask : uint8_t {
     // --- Concrete single states (one-hot) ---
