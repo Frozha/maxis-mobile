@@ -1,0 +1,106 @@
+#include "Simulator.hpp"
+#include <iostream>
+#include <random>
+#include <unordered_set>
+#include <algorithm>
+
+// Helper struct for hashing Position objects
+struct PositionHash {
+    std::size_t operator()(const Position& p) const {
+        return std::hash<int>()(p.row) ^ (std::hash<int>()(p.col) << 1);
+    }
+};
+
+// Generate random initial positions for agents
+// All agents start as GREEN
+// Number of agents = (rows * cols) / 2
+void run_simulation(int rows, int cols, bool verbose = false) {
+    std::cout << "=== MIS Simulation: " << rows << "x" << cols << " Grid ===\n\n";
+    
+    // Calculate number of agents (half of total cells)
+    int total_cells = rows * cols;
+    int num_agents = total_cells / 2;
+    
+    std::cout << "Grid size: " << rows << " x " << cols << "\n";
+    std::cout << "Total cells: " << total_cells << "\n";
+    std::cout << "Number of agents: " << num_agents << "\n\n";
+    
+    // Random number generation setup
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    
+    // Create all possible positions (excluding boundaries)
+    std::vector<Position> available_positions;
+    for (int r = 0; r < rows ; ++r) {
+        for (int c = 0; c < cols ; ++c) {
+            available_positions.push_back({r, c});
+        }
+    }
+    
+    // Shuffle all positions
+    std::shuffle(available_positions.begin(), available_positions.end(), gen);
+    
+    // Take the first num_agents positions
+    std::unordered_set<Position, PositionHash> occupied_positions;
+    std::vector<Position> agent_positions;
+    
+    for (int i = 0; i < num_agents && i < (int)available_positions.size(); ++i) {
+        agent_positions.push_back(available_positions[i]);
+        occupied_positions.insert(available_positions[i]);
+    }
+    
+    std::cout << "Generated " << agent_positions.size() << " random positions\n";
+    std::cout << "All agents start as GREEN\n\n";
+    
+    // Create simulator
+    Simulator sim(rows, cols, verbose);
+    
+    // Add all agents at generated positions (all starting as GREEN)
+    for (const auto& pos : agent_positions) {
+        sim.add_agent(pos, CellMask::GRE);
+    }
+    
+    std::cout << "Initial state:\n";
+    sim.print_state();
+    std::cout << "\n";
+    
+    // Run simulation
+    std::cout << "Running simulation...\n";
+    sim.run(1000);  // Max 1000 steps
+    
+    std::cout << "\nFinal statistics:\n";
+    sim.print_statistics();
+}
+
+int main(int argc, char* argv[]) {
+    // Default grid size
+    int rows = 20;
+    int cols = 20;
+    bool verbose = false;
+    
+    // Parse command line arguments if provided
+    if (argc >= 3) {
+        rows = std::atoi(argv[1]);
+        cols = std::atoi(argv[2]);
+    }
+    if (argc >= 4) {
+        verbose = (std::string(argv[3]) == "v" || std::string(argv[3]) == "verbose");
+    }
+    
+    // Validate grid size
+    if (rows < 4 || cols < 4) {
+        std::cerr << "Error: Grid must be at least 4x4 (need space for boundaries)\n";
+        return 1;
+    }
+    
+    if (rows > 100 || cols > 100) {
+        std::cerr << "Warning: Large grid size may take a long time\n";
+    }
+    
+    run_simulation(rows, cols, verbose);
+    
+    std::cout << "\nUsage: " << argv[0] << " [rows] [cols] [verbose]\n";
+    std::cout << "Example: " << argv[0] << " 15 15 v\n";
+    
+    return 0;
+}
