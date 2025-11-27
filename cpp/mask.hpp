@@ -130,9 +130,9 @@ constexpr std::array<Rule, 4> G1 {{
 constexpr auto GD1 = parse_pattern("xxxxorgxxo.xo");
 constexpr auto GD2 = parse_pattern("oorxorgxxo.xo");
 //Fig. 9. View of Green robot to move Downward when a blue robot is at left
-constexpr auto GD3 = parse_pattern("oooxobrxxo.xo");
+constexpr auto GD3 = parse_pattern("oooxobgxxo.xo");
 //Fig. 10. View of Green robot to move Downward when a blue robot is at upward
-constexpr auto GD4 = parse_pattern("oobxoorxxo.xo");
+constexpr auto GD4 = parse_pattern("oobxoogxxo.xo");
 constexpr std::array<Rule, 4> G2 {{
     { GD1, Action::MOVE_DOWN },
     { GD2, Action::MOVE_DOWN },
@@ -148,15 +148,17 @@ constexpr auto GR1 = parse_pattern("oxr.xxg.xxooo");
 constexpr auto GR2 = parse_pattern("oxroxxg.dxooo");
 constexpr auto GR3 = parse_pattern("xxxxorg.ooooo");
 constexpr auto GR4 = parse_pattern("oor.org.xoooo");
+constexpr auto GR5 = parse_pattern("ooroorg.doooo");
 //Fig. 12. Views of Green robot to move Right due to blue robot.
 constexpr auto GR6 = parse_pattern("ooooobg.doooo");
 constexpr auto GR7 = parse_pattern("ooo.obg.xoooo");
 constexpr auto GR8 = parse_pattern("ooorobg.xoooo");
-constexpr std::array<Rule, 7> G3 {{
+constexpr std::array<Rule, 8> G3 {{
     { GR1, Action::MOVE_RIGHT },
     { GR2, Action::MOVE_RIGHT },
     { GR3, Action::MOVE_RIGHT },
     { GR4, Action::MOVE_RIGHT },
+    { GR5, Action::MOVE_RIGHT },
     { GR6, Action::MOVE_RIGHT },
     { GR7, Action::MOVE_RIGHT },
     { GR8, Action::MOVE_RIGHT },
