@@ -130,4 +130,24 @@ public:
             std::cout << '\n';
         }
     }
+
+    // Print grid for analysis
+    void print_line() const {
+        std::cout<<"[";
+        for (int r = 0; r < rows_; ++r) {
+            std::cout<<"[";
+            for (int c = 0; c < cols_; ++c) {
+                CellMask cell = cells_[index(r, c)];
+                char ch = '?';
+                if (cell == CellMask::BOU) ch = 'x';
+                else if (cell == CellMask::EMP) ch = '.';
+                else if (cell == CellMask::RED) ch = 'r';
+                else if (cell == CellMask::BLU) ch = 'b';
+                else if (cell == CellMask::GRE) ch = 'g';
+                std::cout << ch;
+            }
+            std::cout<<"]";
+        }
+        std::cout<<"], ";
+    }
 };

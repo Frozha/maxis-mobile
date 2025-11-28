@@ -15,4 +15,7 @@ clean:
 run: $(TARGET)
 	./$(TARGET) 5 5 v
 
+mass_simulate: analyse.cpp $(HEADERS)
+	$(CXX) $(CXXFLAGS) analyse.cpp -o mass_simulate
+	
 .PHONY: all clean run

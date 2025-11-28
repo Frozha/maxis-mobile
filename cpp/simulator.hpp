@@ -125,8 +125,9 @@ public:
     
     // Run simulation until convergence or max steps
     void run(int max_steps = 1000) {
+        if (verbose_) {
         std::cout << "Starting simulation...\n";
-        print_state();
+        print_state();}
         
         for (int i = 0; i < max_steps; ++i) {
             int actions = step();
@@ -137,14 +138,12 @@ public:
             
             
             if (actions == 0) {
+                if (verbose_) {
                 std::cout << "\nConverged after " << step_count_ 
-                         << " steps (no more actions)\n";
+                         << " steps (no more actions)\n";}
                 break;
             }
         }
-        
-        std::cout << "\nFinal state:\n";
-        print_state();
     }
     
     // Print current state
@@ -153,6 +152,9 @@ public:
         std::cout << "Agents: " << agents_.size() << "\n";
     }
     
+    void print_state_line() const {
+        grid_.print_line();
+    }
     // Get current step count
     int steps() const { return step_count_; }
     
@@ -169,6 +171,16 @@ public:
                  << ", Green: " << green << "\n";
     }
     
+    void raw_final_r_g_b_stats() const {
+        grid_.print_line();
+        int red = 0, blue = 0, green = 0;
+        for (const auto& agent : agents_) {
+            if (agent.color() == CellMask::RED) red++;
+            else if (agent.color() == CellMask::BLU) blue++;
+            else if (agent.color() == CellMask::GRE) green++;
+        }
+        std::cout<<red<<", "<< green << ", "<<blue<<", "<<step_count_<<", "<<((green==0)&&(blue==0))?1:0;
+    }
     // Access grid (for testing/visualization)
     const Grid& grid() const { return grid_; }
     
