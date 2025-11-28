@@ -11,6 +11,7 @@ $(TARGET): $(SOURCES) $(HEADERS)
 
 clean:
 	rm -f $(TARGET)
+	rm -f mass_simulate
 
 run: $(TARGET)
 	./$(TARGET) 5 5 v

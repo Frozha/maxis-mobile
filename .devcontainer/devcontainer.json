@@ -1,6 +1,6 @@
 {
-    "name": "C++ Raw",
-    "dockerFile": "../cpp/Dockerfile",
+    "name": "C++ and Python Dev",
+    "dockerFile": "Dockerfile",
     "context": "..",
     "remoteUser": "root",
 
@@ -8,5 +8,17 @@
         "source=${localWorkspaceFolder},target=/workspace,type=bind"
     ],
 
-    "extensions": []
+    "postStartCommand": "jupyter lab --ip=0.0.0.0 --port=8888 --allow-root --no-browser --NotebookApp.token=''",
+    
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-vscode.cpptools",
+                "ms-python.vscode-pylance"
+            ]
+        }
+    },
+
+    "forwardPorts": [8888]
 }

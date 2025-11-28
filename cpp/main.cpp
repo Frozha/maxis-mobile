@@ -102,8 +102,8 @@ int main(int argc, char* argv[]) {
     
     run_simulation(rows, cols, verbose);
     
-    std::cout << "\nUsage: " << argv[0] << " [rows] [cols] [verbose]\n";
-    std::cout << "Example: " << argv[0] << " 15 15 v\n";
+    std::cout << "\nUsage: " << argv[0] << " [rows] [cols] [verbose(default)]\n";
+    std::cout << "Example: " << argv[0] << " 15 15 \n";
     
     return 0;
 }
