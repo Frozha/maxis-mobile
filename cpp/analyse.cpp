@@ -11,28 +11,22 @@ struct PositionHash {
     }
 };
 
-// Generate random initial positions for agents
-// All agents start as GREEN
-// Number of agents = (rows * cols) / 2
+// Templated simulation runner: works with Simulator OR CollisionSimulator
+template <typename Sim>
 void run_simulation(int rows, int cols, bool verbose = false) {
-    //std::cout << "=== MIS Simulation: " << rows << "x" << cols << " Grid ===\n\n";
-    
     // Calculate number of agents (half of total cells)
     int total_cells = rows * cols;
     int num_agents = total_cells / 2;
-    
-    //std::cout << "Grid size: " << rows << " x " << cols << "\n";
-    //std::cout << "Total cells: " << total_cells << "\n";
-    //std::cout << "Number of agents: " << num_agents << "\n\n";
     
     // Random number generation setup
     std::random_device rd;
     std::mt19937 gen(rd());
     
-    // Create all possible positions (excluding boundaries)
+    // Create all possible positions
     std::vector<Position> available_positions;
-    for (int r = 0; r < rows ; ++r) {
-        for (int c = 0; c < cols ; ++c) {
+    available_positions.reserve(total_cells);
+    for (int r = 0; r < rows; ++r) {
+        for (int c = 0; c < cols; ++c) {
             available_positions.push_back({r, c});
         }
     }
@@ -43,37 +37,37 @@ void run_simulation(int rows, int cols, bool verbose = false) {
     // Take the first num_agents positions
     std::unordered_set<Position, PositionHash> occupied_positions;
     std::vector<Position> agent_positions;
+    agent_positions.reserve(num_agents);
     
     for (int i = 0; i < num_agents && i < (int)available_positions.size(); ++i) {
         agent_positions.push_back(available_positions[i]);
         occupied_positions.insert(available_positions[i]);
     }
     
-    //std::cout << "Generated " << agent_positions.size() << " random positions\n";
-    //std::cout << "All agents start as GREEN\n\n";
-    
-    // Create simulator
-    Simulator sim(rows, cols, verbose);
+    // Use template param as simulator type (auto for value)
+    auto sim = Sim(rows, cols, verbose);
     
     // Add all agents at generated positions (all starting as GREEN)
     for (const auto& pos : agent_positions) {
         sim.add_agent(pos, CellMask::GRE);
     }
     
-    //std::cout << "Initial state:\n";
+    // Initial state (single-line)
     sim.print_state_line();
 
-    
     // Run simulation
-    //std::cout << "Running simulation...\n";
     sim.run(1000);  // Max 1000 steps
     
-    //std::cout << "\nFinal statistics:\n";
+    // Final raw stats (your encoded format)
     sim.raw_final_r_g_b_stats();
 }
 
 int main(int argc, char* argv[]) {
-    // Default grid size
+    // Choose which simulator you want here:
+    // using SimType = Simulator;
+    using SimType = CollisionSimulator;
+    //using SimType = Simulator;
+    
     int rows = 20;
     int cols = 20;
     bool verbose = false;
@@ -84,16 +78,18 @@ int main(int argc, char* argv[]) {
         rows = std::atoi(argv[1]);
         cols = std::atoi(argv[2]);
         n = std::atoi(argv[3]);
-    }else{
-        std::cout<<"usage : ./mass_simulate <rows> <cols> <n_simulations(optional)>\n";
+    } else {
+        std::cout << "usage : ./mass_simulate <rows> <cols> <n_simulations>\n";
         return -1;
     }
-    std::cout<<rows<<" "<<cols<<"\n";
-    std::cout<<n<<"\n";
+    
+    std::cout << rows << " " << cols << "\n";
+    std::cout << n << "\n";
 
-    while(n--){
-    run_simulation(rows, cols, verbose);
-    std::cout<<"\n";
+    while (n--) {
+        run_simulation<SimType>(rows, cols, verbose);
+        std::cout << "\n";
     }
+
     return 0;
 }

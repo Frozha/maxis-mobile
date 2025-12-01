@@ -1,4 +1,4 @@
-#include "Simulator.hpp"
+#include "simulator.hpp"
 #include <iostream>
 #include <random>
 #include <unordered_set>
@@ -11,11 +11,11 @@ struct PositionHash {
     }
 };
 
-// Generate random initial positions for agents
-// All agents start as GREEN
-// Number of agents = (rows * cols) / 2
+//  plug in either Simulator or CollisionSimulator
+template <typename Sim>
 void run_simulation(int rows, int cols, bool verbose = false) {
-    std::cout << "=== MIS Simulation: " << rows << "x" << cols << " Grid ===\n\n";
+    std::cout << "=== MIS Simulation with Collision Avoidance: "
+              << rows << "x" << cols << " Grid ===\n\n";
     
     // Calculate number of agents (half of total cells)
     int total_cells = rows * cols;
@@ -29,10 +29,11 @@ void run_simulation(int rows, int cols, bool verbose = false) {
     std::random_device rd;
     std::mt19937 gen(rd());
     
-    // Create all possible positions (excluding boundaries)
+    // Create all possible positions
     std::vector<Position> available_positions;
-    for (int r = 0; r < rows ; ++r) {
-        for (int c = 0; c < cols ; ++c) {
+    available_positions.reserve(total_cells);
+    for (int r = 0; r < rows; ++r) {
+        for (int c = 0; c < cols; ++c) {
             available_positions.push_back({r, c});
         }
     }
@@ -43,6 +44,7 @@ void run_simulation(int rows, int cols, bool verbose = false) {
     // Take the first num_agents positions
     std::unordered_set<Position, PositionHash> occupied_positions;
     std::vector<Position> agent_positions;
+    agent_positions.reserve(num_agents);
     
     for (int i = 0; i < num_agents && i < (int)available_positions.size(); ++i) {
         agent_positions.push_back(available_positions[i]);
@@ -52,8 +54,7 @@ void run_simulation(int rows, int cols, bool verbose = false) {
     std::cout << "Generated " << agent_positions.size() << " random positions\n";
     std::cout << "All agents start as GREEN\n\n";
     
-    // Create simulator
-    Simulator sim(rows, cols, verbose);
+    auto sim = Sim(rows, cols, verbose);
     
     // Add all agents at generated positions (all starting as GREEN)
     for (const auto& pos : agent_positions) {
@@ -69,9 +70,8 @@ void run_simulation(int rows, int cols, bool verbose = false) {
 
     std::cout << "\nFinal state:\n";
     sim.print_state();
-    std::cout << "\nFinal statistics:\n";
+    std::cout << "\nFinal statistics:\n\n";
     
-    std::cout << "\n";
     sim.print_statistics();
 }
 
@@ -92,7 +92,7 @@ int main(int argc, char* argv[]) {
     
     // Validate grid size
     if (rows < 4 || cols < 4) {
-        std::cerr << "Error: Grid must be at least 4x4 (need space for boundaries)\n";
+        std::cerr << "Error: Grid must be at least 4x4\n";
         return 1;
     }
     
@@ -100,10 +100,11 @@ int main(int argc, char* argv[]) {
         std::cerr << "Warning: Large grid size may take a long time\n";
     }
     
-    run_simulation(rows, cols, verbose);
-    
+
+    run_simulation<CollisionSimulator>(rows, cols, verbose);
+    //run_simulation<Simulator>(rows, cols, verbose);
     std::cout << "\nUsage: " << argv[0] << " [rows] [cols] [verbose(default)]\n";
-    std::cout << "Example: " << argv[0] << " 15 15 \n";
+    std::cout << "Example: " << argv[0] << " 15 15\n";
     
     return 0;
 }
