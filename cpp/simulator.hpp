@@ -236,6 +236,7 @@ public:
         for (const auto& agent : agents_) {
             View view = grid_.get_view(agent.position());
             Action action = agent.decide(view);
+            //Action action = agent.custom_decide(view);
             decisions.push_back({agent.id(), action});
             
             if (verbose_ && action != Action::NONE) {

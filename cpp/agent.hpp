@@ -54,6 +54,24 @@ public:
         }
     }
     
+    Action custom_decide(const View& view) const {
+        Action decision = Action::NONE;
+
+        switch (color_) {
+            case CellMask::GRE:
+                decision =  decide_green(view);
+                break;
+            case CellMask::BLU:
+                decision = decide_blue(view);
+                break;
+            case CellMask::RED:
+                // Red robots don't have rules in the provided code
+                return Action::NONE;
+        }
+        if(decision == Action::NONE) decision = decide_custom_rules(view);
+        return decision;
+    }
+
     // Compute the target position for a move action
     std::optional<Position> compute_target(Action action) const {
         if (has(action, Action::MOVE_UP)) {

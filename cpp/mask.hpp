@@ -329,7 +329,17 @@ Action decide_blue(const View& view) {
     return Action::NONE;
 }
 
+constexpr auto CUST1 = parse_pattern("xxxxdbg.xdddd");
+constexpr auto CUST2 = parse_pattern("xxxxdbb.xdddd");
+constexpr std::array<Rule, 2> CUST {{
+    { CUST1, Action::MOVE_RIGHT },
+    { CUST2, Action::MOVE_RIGHT | Action::BECOME_GREEN}
+}};
 
+Action decide_custom_rules(const View& view){
+    if (auto a = match_rules(view,CUST); a != Action::NONE) return a;
+    return Action::NONE;
+}
 
 
 
