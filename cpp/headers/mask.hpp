@@ -331,9 +331,16 @@ Action decide_blue(const View& view) {
 
 constexpr auto CUST1 = parse_pattern("xxxxdbg.xdddd");
 constexpr auto CUST2 = parse_pattern("xxxxdbb.xdddd");
-constexpr std::array<Rule, 2> CUST {{
-    { CUST1, Action::MOVE_RIGHT },
-    { CUST2, Action::MOVE_RIGHT | Action::BECOME_GREEN}
+constexpr auto CUST3 = parse_pattern("o.rd.rbgg...o");
+constexpr auto CUST4 = parse_pattern("xxxx.rb.xdgdd");
+constexpr auto CUST5 = parse_pattern("rrbgr.g.drd.d");
+
+constexpr std::array<Rule, 5> CUST {{
+    { CUST1, Action::MOVE_RIGHT },//v1
+    { CUST2, Action::MOVE_RIGHT | Action::BECOME_GREEN},//v1
+    { CUST3, Action::MOVE_DOWN | Action::BECOME_GREEN},//v2
+    { CUST4, Action::MOVE_RIGHT | Action::BECOME_GREEN},//v2
+    { CUST5, Action::BECOME_BLUE}//v2
 }};
 
 Action decide_custom_rules(const View& view){

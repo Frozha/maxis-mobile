@@ -1,4 +1,4 @@
-#include "Simulator.hpp"
+#include "../headers/simulator.hpp"
 #include <iostream>
 #include <random>
 #include <unordered_set>
@@ -11,14 +11,14 @@ struct PositionHash {
     }
 };
 
-// Templated simulation runner: works with Simulator OR CollisionSimulator
+// Templated visualizer logger
 template <typename Sim>
-void run_simulation(int rows, int cols, bool verbose = false) {
+void run_visualizing_simulation(int rows, int cols, int max_steps = 1000) {
     // Calculate number of agents (half of total cells)
     int total_cells = rows * cols;
     int num_agents = total_cells / 2;
-    
-    // Random number generation setup
+
+    // RNG setup
     std::random_device rd;
     std::mt19937 gen(rd());
     
@@ -34,7 +34,7 @@ void run_simulation(int rows, int cols, bool verbose = false) {
     // Shuffle all positions
     std::shuffle(available_positions.begin(), available_positions.end(), gen);
     
-    // Take the first num_agents positions
+    // Take first num_agents positions
     std::unordered_set<Position, PositionHash> occupied_positions;
     std::vector<Position> agent_positions;
     agent_positions.reserve(num_agents);
@@ -44,52 +44,58 @@ void run_simulation(int rows, int cols, bool verbose = false) {
         occupied_positions.insert(available_positions[i]);
     }
     
-    // Use template param as simulator type (auto for value)
-    auto sim = Sim(rows, cols, verbose);
+    // Create simulator (verbose = false so step() doesn't spam logs)
+    auto sim = Sim(rows, cols, /*verbose=*/false);
     
-    // Add all agents at generated positions (all starting as GREEN)
+    // Add all agents as GREEN
     for (const auto& pos : agent_positions) {
         sim.add_agent(pos, CellMask::GRE);
     }
-    
-    // Initial state (single-line)
-    sim.print_state_line();
 
-    // Run simulation
-    sim.run(1000);  // Max 1000 steps
-    
-    // Final raw stats (your encoded format)
-    sim.raw_final_r_g_b_stats();
+    // First line: dimensions
+    std::cout << rows << " " << cols << "\n";
+
+    // Helper lambda to print ONLY the grid as 2D
+    auto print_grid_2d = [&]() {
+        const Grid& g = sim.grid();
+        g.print_line();
+        std::cout<<'\n';
+    };
+
+    // Print initial state (step 0)
+    print_grid_2d();
+
+    // Step loop: after each step, print grid again
+    for (int step = 0; step < max_steps; ++step) {
+        int actions = sim.step();  // single synchronous step
+        print_grid_2d();
+        if (actions == 0) {
+            break;
+        }
+    }
 }
 
 int main(int argc, char* argv[]) {
-    // Choose which simulator you want here:
-    // using SimType = Simulator;
-    using SimType = CollisionSimulator;
-    //using SimType = Simulator;
-    
+    // Choose simulator type here
+    using SimType = Simulator;
+    // using SimType = CollisionSimulator;
+
     int rows = 20;
     int cols = 20;
-    bool verbose = false;
-    int n = 100;
-    
-    // Parse command line arguments if provided
-    if (argc == 4) {
+    int max_steps = 1000;
+
+    if (argc >= 3) {
         rows = std::atoi(argv[1]);
         cols = std::atoi(argv[2]);
-        n = std::atoi(argv[3]);
     } else {
-        std::cout << "usage : ./mass_simulate <rows> <cols> <n_simulations>\n";
+        std::cout << "usage : ./simulate_visualizer_logger <rows> <cols> [max_steps]\n";
         return -1;
     }
-    
-    std::cout << rows << " " << cols << "\n";
-    std::cout << n << "\n";
 
-    while (n--) {
-        run_simulation<SimType>(rows, cols, verbose);
-        std::cout << "\n";
+    if (argc >= 4) {
+        max_steps = std::atoi(argv[3]);
     }
 
+    run_visualizing_simulation<SimType>(rows, cols, max_steps);
     return 0;
 }

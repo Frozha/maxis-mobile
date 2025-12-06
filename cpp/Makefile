@@ -1,19 +1,21 @@
 CXX      = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -O2 -g
 
-HEADERS  = mask.hpp grid.hpp agent.hpp simulator.hpp
+HEADERS  = headers/mask.hpp headers/grid.hpp headers/agent.hpp headers/simulator.hpp
 
 # Executables
 MIS_TARGET   = mis_simulator
 MASS_TARGET  = mass_simulate
 VIS_TARGET   = visualizer_logger
+START_DIFF_TARGET = mis_mod_start
 
 # Sources for each executable
-MIS_SRC   = main.cpp
-MASS_SRC  = analyse.cpp
-VIS_SRC   = visualizer.cpp    # <-- change if you used a different file name
+MIS_SRC   = unmodified_alg/main.cpp
+MASS_SRC  = unmodified_alg/analyse.cpp
+VIS_SRC   = visualizer.cpp    
+START_DIFF_SRC = modified_start/modified_start.cpp
 
-ALL_TARGETS = $(MIS_TARGET) $(MASS_TARGET) $(VIS_TARGET)
+ALL_TARGETS = $(MIS_TARGET) $(MASS_TARGET) $(VIS_TARGET) $(START_DIFF_TARGET)
 
 all: $(ALL_TARGETS)
 
@@ -26,6 +28,8 @@ $(MASS_TARGET): $(MASS_SRC) $(HEADERS)
 $(VIS_TARGET): $(VIS_SRC) $(HEADERS)
 	$(CXX) $(CXXFLAGS) $(VIS_SRC) -o $(VIS_TARGET)
 
+$(START_DIFF_TARGET): $(START_DIFF_SRC) $(HEADERS)
+	$(CXX) $(CXXFLAGS) $(START_DIFF_SRC) -o $(START_DIFF_TARGET)
 clean:
 	rm -f $(ALL_TARGETS)
 

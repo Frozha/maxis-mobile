@@ -1,4 +1,4 @@
-#include "simulator.hpp"
+#include "../headers/simulator.hpp"
 #include <iostream>
 #include <random>
 #include <unordered_set>
