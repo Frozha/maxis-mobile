@@ -88,7 +88,7 @@ int main(int argc, char* argv[]) {
         rows = std::atoi(argv[1]);
         cols = std::atoi(argv[2]);
     } else {
-        std::cout << "usage : ./simulate_visualizer_logger <rows> <cols> [max_steps]\n";
+        std::cout << "usage : ./visualizer_log <rows> <cols> [max_steps]\n";
         return -1;
     }
 

@@ -11,12 +11,20 @@ struct PositionHash {
     }
 };
 
-// Templated simulation runner: works with Simulator OR CollisionSimulator
+
+
 template <typename Sim>
 void run_simulation(int rows, int cols, bool verbose = false) {
+    std::cout << "=== MIS Simulation: "
+              << rows << "x" << cols << " Grid ===\n\n";
+    
     // Calculate number of agents (half of total cells)
     int total_cells = rows * cols;
     int num_agents = total_cells / 2;
+    
+    std::cout << "Grid size: " << rows << " x " << cols << "\n";
+    std::cout << "Total cells: " << total_cells << "\n";
+    std::cout << "Number of agents: " << num_agents << "\n\n";
     
     // Random number generation setup
     std::random_device rd;
@@ -44,7 +52,9 @@ void run_simulation(int rows, int cols, bool verbose = false) {
         occupied_positions.insert(available_positions[i]);
     }
     
-    // Use template param as simulator type (auto for value)
+    std::cout << "Generated " << agent_positions.size() << " random positions\n";
+    std::cout << "All agents start as GREEN\n\n";
+    
     auto sim = Sim(rows, cols, verbose);
     
     // Add all agents at generated positions (all starting as GREEN)
@@ -52,44 +62,49 @@ void run_simulation(int rows, int cols, bool verbose = false) {
         sim.add_agent(pos, CellMask::GRE);
     }
     
-    // Initial state (single-line)
-    sim.print_state_line();
-
+    std::cout << "Initial state:\n";
+    sim.print_state();
+    std::cout << "\n";
+    
     // Run simulation
     sim.run(1000);  // Max 1000 steps
+
+    std::cout << "\nFinal state:\n";
+    sim.print_state();
+    std::cout << "\nFinal statistics:\n\n";
     
-    // Final raw stats (your encoded format)
-    sim.raw_final_r_g_b_stats();
+    sim.print_statistics();
 }
 
 int main(int argc, char* argv[]) {
-    // Choose which simulator you want here:
-    // using SimType = Simulator;
-    using SimType = CollisionSimulator;
-    //using SimType = Simulator;
-    
+    // Default grid size
     int rows = 20;
     int cols = 20;
-    bool verbose = false;
-    int n = 100;
+    bool verbose = true;
     
     // Parse command line arguments if provided
-    if (argc == 4) {
+    if (argc >= 3) {
         rows = std::atoi(argv[1]);
         cols = std::atoi(argv[2]);
-        n = std::atoi(argv[3]);
-    } else {
-        std::cout << "usage : ./mass_simulate <rows> <cols> <n_simulations>\n";
-        return -1;
+    }
+    if (argc >= 4) {
+        verbose = (std::string(argv[3]) == "v" || std::string(argv[3]) == "verbose");
     }
     
-    std::cout << rows << " " << cols << "\n";
-    std::cout << n << "\n";
-
-    while (n--) {
-        run_simulation<SimType>(rows, cols, verbose);
-        std::cout << "\n";
+    // Validate grid size
+    if (rows < 4 || cols < 4) {
+        std::cerr << "Error: Grid must be at least 4x4\n";
+        return 1;
     }
+    
+    if (rows > 100 || cols > 100) {
+        std::cerr << "Warning: Large grid size may take a long time\n";
+    }
+    
 
+    run_simulation<Simulator>(rows, cols, verbose);
+    std::cout << "\nUsage: " << argv[0] << " [rows] [cols] [verbose(default)]\n";
+    std::cout << "Example: " << argv[0] << " 15 15\n";
+    
     return 0;
 }

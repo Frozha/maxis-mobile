@@ -1,4 +1,4 @@
-#include "../headers/simulator.hpp"
+#include "CollisionSimulator.hpp" //local new simulator
 #include <iostream>
 #include <random>
 #include <unordered_set>
