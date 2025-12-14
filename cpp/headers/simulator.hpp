@@ -174,6 +174,16 @@ public:
                  << ", Green: " << green << "\n";
     }
     
+    int success() const{
+        int red = 0, blue = 0, green = 0;
+        for (const auto& agent : agents_) {
+            if (agent.color() == CellMask::RED) red++;
+            else if (agent.color() == CellMask::BLU) blue++;
+            else if (agent.color() == CellMask::GRE) green++;
+        }
+        return ((green==0)&&(blue==0))?1:0;
+    }
+
     void raw_final_r_g_b_stats() const {
         grid_.print_line();
         int red = 0, blue = 0, green = 0;
@@ -189,6 +199,8 @@ public:
     
     // Access agents (for testing/analysis)
     const std::vector<Agent>& agents() const { return agents_; }
+
+    
 };
 
 

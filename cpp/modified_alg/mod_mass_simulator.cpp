@@ -11,6 +11,10 @@ struct PositionHash {
     }
 };
 
+    // Random number generation setup
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
 // Templated simulation runner: works with Simulator OR CollisionSimulator
 template <typename Sim>
 void run_simulation(int rows, int cols, bool verbose = false) {
@@ -18,9 +22,7 @@ void run_simulation(int rows, int cols, bool verbose = false) {
     int total_cells = rows * cols;
     int num_agents = total_cells / 2;
     
-    // Random number generation setup
-    std::random_device rd;
-    std::mt19937 gen(rd());
+
     
     // Create all possible positions
     std::vector<Position> available_positions;
@@ -56,7 +58,7 @@ void run_simulation(int rows, int cols, bool verbose = false) {
     sim.print_state_line();
 
     // Run simulation
-    sim.run(1000);  // Max 1000 steps
+    sim.run(10000);  // Max 1000 steps
     
     // Final raw stats (your encoded format)
     sim.raw_final_r_g_b_stats();

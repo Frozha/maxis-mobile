@@ -3,7 +3,7 @@
 #include <random>
 #include <unordered_set>
 #include <algorithm>
-
+#include<math.h>
 // Helper struct for hashing Position objects
 struct PositionHash {
     std::size_t operator()(const Position& p) const {
@@ -11,16 +11,18 @@ struct PositionHash {
     }
 };
 
+    // RNG setup
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    
 // Templated visualizer logger
 template <typename Sim>
 void run_visualizing_simulation(int rows, int cols, int max_steps = 1000) {
     // Calculate number of agents (half of total cells)
     int total_cells = rows * cols;
-    int num_agents = total_cells / 2;
+    int num_agents = ceil((float)total_cells / 2);
 
-    // RNG setup
-    std::random_device rd;
-    std::mt19937 gen(rd());
+
     
     // Create all possible positions
     std::vector<Position> available_positions;
@@ -82,7 +84,7 @@ int main(int argc, char* argv[]) {
 
     int rows = 20;
     int cols = 20;
-    int max_steps = 1000;
+    int max_steps = 10000;
 
     if (argc >= 3) {
         rows = std::atoi(argv[1]);

@@ -3,6 +3,7 @@
 #include <random>
 #include <unordered_set>
 #include <algorithm>
+#include<math.h>
 
 // Helper struct for hashing Position objects
 struct PositionHash {
@@ -12,7 +13,10 @@ struct PositionHash {
 };
 
 
-
+    // Random number generation setup
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    
 template <typename Sim>
 void run_simulation(int rows, int cols, bool verbose = false) {
     std::cout << "=== MIS Simulation: "
@@ -20,15 +24,13 @@ void run_simulation(int rows, int cols, bool verbose = false) {
     
     // Calculate number of agents (half of total cells)
     int total_cells = rows * cols;
-    int num_agents = total_cells / 2;
+    int num_agents = std::ceil((float)total_cells / 2);
     
     std::cout << "Grid size: " << rows << " x " << cols << "\n";
     std::cout << "Total cells: " << total_cells << "\n";
     std::cout << "Number of agents: " << num_agents << "\n\n";
     
-    // Random number generation setup
-    std::random_device rd;
-    std::mt19937 gen(rd());
+
     
     // Create all possible positions
     std::vector<Position> available_positions;
@@ -67,7 +69,7 @@ void run_simulation(int rows, int cols, bool verbose = false) {
     std::cout << "\n";
     
     // Run simulation
-    sim.run(1000);  // Max 1000 steps
+    sim.run(10000);  // Max 1000 steps
 
     std::cout << "\nFinal state:\n";
     sim.print_state();

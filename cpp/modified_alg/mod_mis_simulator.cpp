@@ -11,6 +11,10 @@ struct PositionHash {
     }
 };
 
+    // Random number generation setup
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
 //  plug in either Simulator or CollisionSimulator
 template <typename Sim>
 void run_simulation(int rows, int cols, bool verbose = false) {
@@ -25,9 +29,7 @@ void run_simulation(int rows, int cols, bool verbose = false) {
     std::cout << "Total cells: " << total_cells << "\n";
     std::cout << "Number of agents: " << num_agents << "\n\n";
     
-    // Random number generation setup
-    std::random_device rd;
-    std::mt19937 gen(rd());
+
     
     // Create all possible positions
     std::vector<Position> available_positions;
@@ -66,7 +68,7 @@ void run_simulation(int rows, int cols, bool verbose = false) {
     std::cout << "\n";
     
     // Run simulation
-    sim.run(1000);  // Max 1000 steps
+    sim.run(10000);  // Max 1000 steps
 
     std::cout << "\nFinal state:\n";
     sim.print_state();

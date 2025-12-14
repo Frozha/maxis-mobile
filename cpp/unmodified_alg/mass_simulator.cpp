@@ -3,7 +3,7 @@
 #include <random>
 #include <unordered_set>
 #include <algorithm>
-
+#include<math.h>
 // Helper struct for hashing Position objects
 struct PositionHash {
     std::size_t operator()(const Position& p) const {
@@ -11,15 +11,16 @@ struct PositionHash {
     }
 };
 
+// Random number generation setup
+std::random_device rd;
+std::mt19937 gen(rd());
+
 template <typename Sim>
-void run_simulation(int rows, int cols, bool verbose = false) {
+int run_simulation(int rows, int cols, bool verbose = false, bool log_verbose=true) {
     // Calculate number of agents (half of total cells)
     int total_cells = rows * cols;
-    int num_agents = total_cells / 2;
-    
-    // Random number generation setup
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    int num_agents = ceil((float)total_cells / 2);
+
     
     // Create all possible positions
     std::vector<Position> available_positions;
@@ -52,13 +53,14 @@ void run_simulation(int rows, int cols, bool verbose = false) {
     }
     
     // Initial state (single-line)
-    sim.print_state_line();
+    if(log_verbose) {sim.print_state_line();}
 
     // Run simulation
-    sim.run(1000);  // Max 1000 steps
+    sim.run(10000);  // Max 1000 steps
     
     // Final raw stats (your encoded format)
-    sim.raw_final_r_g_b_stats();
+    if(log_verbose){sim.raw_final_r_g_b_stats();}
+    return sim.success();
 }
 
 int main(int argc, char* argv[]) {
@@ -68,25 +70,34 @@ int main(int argc, char* argv[]) {
     int rows = 20;
     int cols = 20;
     bool verbose = false;
+    bool log_verbose = true;
     int n = 100;
     
     // Parse command line arguments if provided
-    if (argc == 4) {
+    if (argc >= 4) {
         rows = std::atoi(argv[1]);
         cols = std::atoi(argv[2]);
         n = std::atoi(argv[3]);
-    } else {
-        std::cout << "usage : ./mass_simulate <rows> <cols> <n_simulations>\n";
+        
+    } 
+    else {
+        std::cout << "usage : ./mass_simulate <rows> <cols> <n_simulations> <verbose (default/put anything else to disable)>\n";
         return -1;
     }
-    
+    if (argc >= 5) {
+        log_verbose = false;
+    }
+    if(log_verbose){
     std::cout << rows << " " << cols << "\n";
     std::cout << n << "\n";
+    }
+    long long success_count = 0;
 
     while (n--) {
-        run_simulation<SimType>(rows, cols, verbose);
-        std::cout << "\n";
+        success_count+=run_simulation<SimType>(rows, cols, verbose, log_verbose);
+        if(log_verbose) std::cout << "\n";
     }
+    std::cerr<<"success : "<<success_count<<"\n";
 
     return 0;
 }
