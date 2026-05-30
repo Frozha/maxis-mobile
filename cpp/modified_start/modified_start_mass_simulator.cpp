@@ -16,7 +16,7 @@ std::random_device rd;
 std::mt19937 gen(rd());
 
 template <typename Sim>
-int run_simulation(int rows, int cols, bool verbose = false, bool log_verbose=true) {
+int run_simulation(int rows, int cols, bool verbose = false, bool log_verbose=true, int max_steps=10000) {
     // Calculate number of agents (half of total cells)
     int total_cells = rows * cols;
     int num_agents = total_cells / 2;
@@ -56,7 +56,7 @@ int run_simulation(int rows, int cols, bool verbose = false, bool log_verbose=tr
     if(log_verbose) {sim.print_state_line();}
 
     // Run simulation
-    sim.run(10000);  // Max 1000 steps
+    sim.run(max_steps);
     
     // Final raw stats (your encoded format)
     if(log_verbose){sim.raw_final_r_g_b_stats();}
@@ -72,19 +72,22 @@ int main(int argc, char* argv[]) {
     bool verbose = false;
     bool log_verbose = true;
     int n = 100;
-    
+    int max_steps = 10000;
+
     // Parse command line arguments if provided
     if (argc >= 4) {
         rows = std::atoi(argv[1]);
         cols = std::atoi(argv[2]);
         n = std::atoi(argv[3]);
-        
-    } 
+    }
     else {
-        std::cout << "usage : ./mod_start_mass_simulate <rows> <cols> <n_simulations> <verbose (default/put anything else to disable)>\n";
+        std::cout << "usage : ./mod_start_mass_simulate <rows> <cols> <n_simulations> [max_steps] [f=disable_log]\n";
         return -1;
     }
     if (argc >= 5) {
+        max_steps = std::atoi(argv[4]);
+    }
+    if (argc >= 6) {
         log_verbose = false;
     }
     if(log_verbose){
@@ -94,7 +97,7 @@ int main(int argc, char* argv[]) {
     long long success_count = 0;
 
     while (n--) {
-        success_count+=run_simulation<SimType>(rows, cols, verbose, log_verbose);
+        success_count+=run_simulation<SimType>(rows, cols, verbose, log_verbose, max_steps);
         if(log_verbose) std::cout << "\n";
     }
     std::cerr<<"success : "<<success_count<<"\n";

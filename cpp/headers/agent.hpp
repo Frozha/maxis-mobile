@@ -54,6 +54,15 @@ public:
         }
     }
     
+    Action suppression_aware_decide(const View& view) const {
+        switch (color_) {
+            case CellMask::GRE: return suppression_aware_decide_green(view);
+            case CellMask::BLU: return decide_blue(view);
+            case CellMask::RED: return Action::NONE;
+            default:            return Action::NONE;
+        }
+    }
+
     Action custom_decide(const View& view) const {
         Action decision = Action::NONE;
 

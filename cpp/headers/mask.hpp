@@ -329,6 +329,26 @@ Action decide_blue(const View& view) {
     return Action::NONE;
 }
 
+// Resolves the three suppression chains that were traced to deadlock configurations.
+// Checks the suppressed rules before the standard cascade so they are no longer
+// silently overridden by a higher-priority group.
+//
+// Suppressions resolved:
+//   GL1/2/3 > GB14  (left suppresses become-blue at right boundary)
+//   GL1/2/3 > GD4   (left suppresses move-down near right boundary)
+//   GR6/7   > GU13/15/18 (right suppresses move-up when blue is to the left)
+//
+// Blue rules are unchanged — blue deadlocks arise from green trajectory errors,
+// not from blue suppression chains.
+Action suppression_aware_decide_green(const View& view) {
+    if (match_view(view, GB14)) return Action::BECOME_BLUE;
+    if (match_view(view, GD4))  return Action::MOVE_DOWN;
+    if (match_view(view, GU13)) return Action::MOVE_UP;
+    if (match_view(view, GU15)) return Action::MOVE_UP;
+    if (match_view(view, GU18)) return Action::MOVE_UP;
+    return decide_green(view);
+}
+
 constexpr auto CUST1 = parse_pattern("xxxxdbg.xdddd");
 constexpr auto CUST2 = parse_pattern("xxxxdbb.xdddd");
 constexpr auto CUST3 = parse_pattern("o.rd.rbgg...o");
