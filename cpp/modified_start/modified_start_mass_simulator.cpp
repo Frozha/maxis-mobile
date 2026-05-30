@@ -19,7 +19,7 @@ template <typename Sim>
 int run_simulation(int rows, int cols, bool verbose = false, bool log_verbose=true, int max_steps=10000) {
     // Calculate number of agents (half of total cells)
     int total_cells = rows * cols;
-    int num_agents = total_cells / 2;
+    int num_agents = (total_cells + 1) / 2;
 
     
     // Create all possible positions

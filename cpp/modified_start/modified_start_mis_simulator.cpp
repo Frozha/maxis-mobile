@@ -23,7 +23,7 @@ void run_simulation(int rows, int cols, bool verbose = false) {
     
     // Calculate number of agents (half of total cells)
     int total_cells = rows * cols;
-    int num_agents = total_cells / 2;
+    int num_agents = (total_cells + 1) / 2;
     
     std::cout << "Grid size: " << rows << " x " << cols << "\n";
     std::cout << "Total cells: " << total_cells << "\n";
